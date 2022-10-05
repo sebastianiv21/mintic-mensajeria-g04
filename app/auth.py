@@ -59,37 +59,37 @@ def register():
             error = None
 
             if not username:
-                error = 'Username is required.'
+                error = 'El nombre de usuario es requerido.'
                 flash(error)
                 return render_template('auth/register.html')
             
             if not utils.isUsernameValid(username):
-                error = "Username should be alphanumeric plus '.','_','-'"
+                error = "El nombre de usuario debe ser alfanumérico más '.','_','-'"
                 flash(error)
                 return render_template('auth/register.html')
 
             if not password:
-                error = 'Password is required.'
+                error = 'La contraseña es requerida.'
                 flash(error)
                 return render_template('auth/register.html')
 
             if db.execute('SELECT id FROM user WHERE username = ?', (username,)).fetchone() is not None:
-                error = 'User {} is already registered.'.format(username)
+                error = 'El usuario {} ya se encuentra registrado.'.format(username)
                 flash(error)
                 return render_template('auth/register.html')
             
             if ((not email) or (not utils.isEmailValid(email))):
-                error =  'Email address invalid.'
+                error =  'Correo electrónico inválido.'
                 flash(error)
                 return render_template('auth/register.html')
             
             if db.execute('SELECT id FROM user WHERE email = ?', (email,)).fetchone() is not None:
-                error =  'Email {} is already registered.'.format(email)
+                error =  'El correo electrónico {} ya se encuentra registrado.'.format(email)
                 flash(error)
                 return render_template('auth/register.html')
             
             if (not utils.isPasswordValid(password)):
-                error = 'Password should contain at least a lowercase letter, an uppercase letter and a number with 8 characters long'
+                error = 'La contraseña debe contener al menos una letra minúscula, una letra mayúscula y un número con longitud de 8 caracteres.'
                 flash(error)
                 return render_template('auth/register.html')
 
@@ -107,11 +107,11 @@ def register():
                 'SELECT user,password FROM credentials WHERE name=?', (utils.EMAIL_APP,)
             ).fetchone()
 
-            content = 'Hello there, to activate your account, please click on this link ' + flask.url_for('auth.activate', _external=True) + '?auth=' + number
+            content = 'Hola, para activar tu cuenta, por favor da clic en este enlace ' + flask.url_for('auth.activate', _external=True) + '?auth=' + number
             
-            send_email(credentials, receiver=email, subject='Activate your account', message=content)
+            send_email(credentials, receiver=email, subject='Activación de cuenta', message=content)
             
-            flash('Please check in your registered email to activate your account')
+            flash('Por favor revisa tu bandeja de correo electrónico para activar tu cuenta')
             return render_template('auth/login.html') 
 
         return render_template('auth/register.html') 
@@ -131,23 +131,23 @@ def confirm():
             authid = request.form['authid']
 
             if not authid:
-                flash('Invalid')
+                flash('Inválido')
                 return render_template('auth/forgot.html')
 
             if not password:
-                flash('Password required')
+                flash('Contraseña requerida')
                 return render_template('auth/change.html', number=authid)
 
             if not password1:
-                flash('Password confirmation required')
+                flash('Confirmación de contraseña requerida')
                 return render_template('auth/change.html', number=authid)
 
             if password1 != password:
-                flash('Both values should be the same')
+                flash('Las contraseñas no coinciden')
                 return render_template('auth/change.html', number=authid)
 
             if not utils.isPasswordValid(password):
-                error = 'Password should contain at least a lowercase letter, an uppercase letter and a number with 8 characters long.'
+                error = 'La contraseña debe contener al menos una letra minúscula, una letra mayúscula y un número con longitud de 8 caracteres.'
                 flash(error)
                 return render_template('auth/change.html', number=authid)
 
@@ -168,7 +168,7 @@ def confirm():
                 db.commit()
                 return redirect(url_for('auth.login'))
             else:
-                flash('Invalid')
+                flash('Inválido')
                 return render_template('auth/forgot.html')
 
         return render_template('auth/forgot.html')
@@ -195,7 +195,7 @@ def change():
         
         return render_template('auth/forgot.html')
     except:
-        return render_template(TEMP)
+        return render_template('auth/forgot.html')
 
 
 @bp.route('/forgot', methods=('GET', 'POST'))
@@ -208,7 +208,7 @@ def forgot():
             email = request.form['email']
             
             if ((not email) or (not utils.isEmailValid(email))):
-                error = 'Email Address Invalid'
+                error = 'Correo electrónico inválido'
                 flash(error)
                 return render_template('auth/forgot.html')
 
@@ -231,21 +231,21 @@ def forgot():
                 db.commit()
                 
                 credentials = db.execute(
-                    'Select user,password from credentials where name=?',(utils.EMAIL_APP,)
+                    'SELECT user,password FROM credentials WHERE name=?',(utils.EMAIL_APP,)
                 ).fetchone()
                 
-                content = 'Hello there, to change your password, please click on this link ' + flask.url_for('auth.change', _external=True) + '?auth=' + number
+                content = 'Hola, para cambiar tu contraseña, por favor da clic en este enlace ' + flask.url_for('auth.change', _external=True) + '?auth=' + number
                 
-                send_email(credentials, receiver=email, subject='New Password', message=content)
+                send_email(credentials, receiver=email, subject='Nueva contraseña', message=content)
                 
-                flash('Please check in your registered email')
+                flash('Por favor revisa tu bandeja de correo electrónico')
             else:
-                error = 'Email is not registered'
+                error = 'El correo electrónico no se encuentra registrado'
                 flash(error)            
 
         return render_template('auth/forgot.html')
     except:
-        return render_template(TEMP)
+        return render_template('auth/forgot.html')
 
 
 @bp.route('/login', methods=('GET', 'POST'))
@@ -259,12 +259,12 @@ def login():
             password = request.form['password']
 
             if not username:
-                error = 'Username Field Required'
+                error = 'Nombre de usuario requerido'
                 flash(error)
                 return render_template('auth/login.html')
 
             if not password:
-                error = 'Password Field Required'
+                error = 'Contraseña requerida'
                 flash(error)
                 return render_template('auth/login.html')
 
@@ -275,9 +275,9 @@ def login():
             ).fetchone()
             
             if (username != user['username']) or (password != user['password']):
-                error = 'Incorrect username or password'
+                error = 'Usuario o contraseña incorrectos'
             elif not check_password_hash(user['password'], password + user['salt']):
-                error = 'Incorrect username or password'   
+                error = 'Usuario o contraseña incorrectos'   
 
             if error is None:
                 session.clear()
@@ -285,8 +285,8 @@ def login():
                 return redirect(url_for('inbox.show'))
 
             flash(error)
-
-        return render_template(TEMP)
+#revisar
+        return render_template('auth/login.html')
     except:
         return render_template('auth/login.html')
         
