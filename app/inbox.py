@@ -11,14 +11,15 @@ bp = Blueprint('inbox', __name__, url_prefix='/inbox')
 @bp.route("/getDB")
 @login_required
 def getDB():
-    return send_file(current_app.config['schema.sql'], as_attachment=True)
+    return send_file(current_app.config['DATABASE'], as_attachment=True)
 
 
 @bp.route('/show')
 @login_required
 def show():
     db = get_db()
-    messages = db.execute('SELECT * FROM message WHERE to_id=?', (g.user['id'],)).fetchall()
+    messages = db.execute(
+        'SELECT * FROM message WHERE to_id=?', (g.user['id'],)).fetchall()
 
     return render_template('inbox/show.html', messages=messages)
 
